@@ -11,7 +11,7 @@ class StoreRubricRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class StoreRubricRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name'      => ['required', 'string', 'max:255', 'unique:rubrics,name'],
+            'parent_id' => ['nullable', 'exists:rubrics,id'],
         ];
     }
 }

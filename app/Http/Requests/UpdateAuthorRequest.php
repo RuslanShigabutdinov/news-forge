@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateAuthorRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateAuthorRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,10 @@ class UpdateAuthorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'full_name' => ['sometimes', 'string', 'max:255'],
+            'email'     => [ 'sometimes', 'string', 'email', 'max:255', Rule::unique('authors', 'email')->ignore($this->author)],
+            'avatar'    => ['sometimes', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'user_id'   => [ 'sometimes', 'exists:users,id', Rule::unique('authors', 'user_id')->ignore($this->author)],
         ];
     }
 }

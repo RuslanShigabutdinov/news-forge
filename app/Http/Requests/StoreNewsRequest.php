@@ -11,7 +11,7 @@ class StoreNewsRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,13 @@ class StoreNewsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title'        => ['required', 'string', 'max:255'],
+            'announcement' => ['required', 'string', 'max:500'],
+            'body'         => ['required', 'string'],
+            'published_at' => ['nullable', 'date'],
+            'author_id'    => ['required', 'exists:authors,id'],
+            'rubric_ids'   => ['required', 'array', 'min:1'],
+            'rubric_ids.*' => ['integer', 'exists:rubrics,id'],
         ];
     }
 }

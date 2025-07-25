@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateRubricRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateRubricRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,8 @@ class UpdateRubricRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['sometimes', 'string', 'max:255', Rule::unique('rubrics', 'name')->ignore($this->rubric)],
+            'parent_id' => [ 'sometimes', 'nullable', 'exists:rubrics,id', Rule::notIn([$this->rubric->id])],
         ];
     }
 }
