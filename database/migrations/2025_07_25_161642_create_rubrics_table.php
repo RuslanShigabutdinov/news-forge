@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('rubrics', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('parent_id')->nullable()->constrained('rubrics')->nullOnDelete();
+            $table->foreignId('parent_id')->nullable()->constrained('rubrics')->cascadeOnDelete();
             $table->timestamps();
         });
     }
