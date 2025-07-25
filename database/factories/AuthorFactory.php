@@ -17,7 +17,8 @@ class AuthorFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'full_name'     => $this->faker->name,
+            'avatar_path'   => null,
         ];
     }
 }

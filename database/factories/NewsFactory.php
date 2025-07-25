@@ -17,7 +17,10 @@ class NewsFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'title'         => $this->faker->sentence(6),
+            'announcement'  => $this->faker->text(160),
+            'body'          => $this->faker->paragraphs(5, true),
+            'published_at'  => $this->faker->dateTimeBetween('-10 days', '+2 days'),
         ];
     }
 }

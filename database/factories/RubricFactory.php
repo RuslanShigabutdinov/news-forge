@@ -17,7 +17,8 @@ class RubricFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name'      => ucfirst($this->faker->unique()->words(2, true)),
+            'parent_id' => null,
         ];
     }
 }

@@ -19,7 +19,6 @@ return new class extends Migration
             $table->text('body');
             $table->timestamp('published_at')->nullable()->index();
             $table->timestamps();
-            $table->timestamps();
         });
     }
 
