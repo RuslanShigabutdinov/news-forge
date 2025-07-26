@@ -15,13 +15,9 @@ class RubricResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'           => $this->id,
-            'title'        => $this->title,
-            'announcement' => $this->announcement,
-            'body'         => $this->when($this->isDetail($request), $this->body),
-            'published_at' => optional($this->published_at)->toDateTimeString(),
-            'author'       => new AuthorResource($this->whenLoaded('author')),
-            'rubrics'      => RubricResource::collection($this->whenLoaded('rubrics')),
+            'id'       => $this->id,
+            'name'     => $this->name,
+            'children' => RubricResource::collection($this->whenLoaded('children')),
         ];
     }
     private function isDetail($request): bool {

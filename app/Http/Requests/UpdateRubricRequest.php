@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Models\Rubric;
+use App\Rules\NotSelfOrDescendant;
 
 class UpdateRubricRequest extends FormRequest
 {
@@ -21,10 +23,14 @@ class UpdateRubricRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-    {
-        return [
-            'name' => ['sometimes', 'string', 'max:255', Rule::unique('rubrics', 'name')->ignore($this->rubric)],
-            'parent_id' => [ 'sometimes', 'nullable', 'exists:rubrics,id', Rule::notIn([$this->rubric->id])],
-        ];
-    }
+{
+    return [
+        'name'      => ['sometimes', 'string', 'max:255'],
+        'parent_id' => [
+    'sometimes', 'nullable', 'exists:rubrics,id',
+    new NotSelfOrDescendant($this->route('rubric')),
+],
+    ];
+}
+
 }
