@@ -17,7 +17,7 @@ class Author extends Model
 
     use HasFactory;
 
-    protected $fillable = ['full_name', 'avatar_path', 'user_id'];
+    protected $fillable = ['full_name', 'avatar', 'avatar_path', 'user_id'];
 
     
     public function user(): BelongsTo {
@@ -27,16 +27,18 @@ class Author extends Model
         return $this->hasMany(News::class);
     }
 
-    /* ---------- accessor / mutator ---------- */
-    public function setAvatarPathAttribute($v)
-    {
+    public function setAvatarAttribute($v) {
         $this->attributes['avatar_path'] =
-            $v instanceof UploadedFile ? $v->store('avatars', 'public') : $v;
+            $v instanceof UploadedFile
+                ? $v->store('avatars', 'public')
+                : $v;            // строка (для сидера)
     }
-    public function getAvatarUrlAttribute()
-    {
-        return $this->avatar_path ? asset('storage/'.$this->avatar_path)
-                                  : asset('images/default_avatar.png');
+
+    public function getAvatarUrlAttribute(): string {
+        return $this->avatar_path
+            ? asset('storage/' . $this->avatar_path)
+            : asset('images/default_avatar.png');
     }
+    protected $appends = ['avatar_url'];
 
 }

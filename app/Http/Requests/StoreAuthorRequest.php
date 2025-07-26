@@ -24,7 +24,6 @@ class StoreAuthorRequest extends FormRequest
     {
         return [
             'full_name' => ['required', 'string', 'max:255'],
-            'email'     => ['required', 'string', 'email', 'max:255', 'unique:authors,email'],
             'avatar'    => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'user_id'   => ['required', 'exists:users,id', Rule::unique('authors', 'user_id')],
         ];
