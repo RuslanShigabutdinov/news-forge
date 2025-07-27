@@ -12,18 +12,18 @@ class NotSelfOrDescendant implements ValidationRule
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        // 1) parent_id не передан — пропускаем
+        // parent_id не передан — пропускаем
         if (!$value) {
             return;
         }
 
-        // 2) Нельзя назначить родителем саму себя
+        // Нельзя назначить родителем саму себя
         if ($value == $this->current->id) {
             $fail(__('validation.parent_must_not_be_descendant'));
             return;
         }
 
-        // 3) Проверяем, не является ли выбранный parent дочерним узлом
+        // Проверяем, не является ли выбранный parent дочерним узлом
         $parent = Rubric::query()->select('_lft', '_rgt')->find($value);
 
         if (
