@@ -15,10 +15,20 @@ class NewsResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'       => $this->id,
-            'name'     => $this->name,
-            'parent'   => new RubricResource($this->whenLoaded('parent')),
-            'children' => RubricResource::collection($this->whenLoaded('children')),
+            'id'           => $this->id,
+            'title'        => $this->title,
+            'announcement' => $this->announcement,
+            'body'         => $this->when($this->isDetailRoute($request), $this->body),
+            'published_at' => $this->when(
+                                $this->published_at,
+                                fn () => $this->published_at->toIso8601String()
+                              ),
+            'author'  => new AuthorResource($this->whenLoaded('author')),
+            'rubrics' => RubricResource::collection($this->whenLoaded('rubrics')),
         ];
+    }
+    private function isDetailRoute(Request $request): bool
+    {
+        return $request->routeIs('news.show');
     }
 }

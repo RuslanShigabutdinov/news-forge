@@ -1,66 +1,71 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Http\JsonResponse;
 
-use App\Http\Requests\StoreNewsRequest;
-use App\Http\Requests\UpdateNewsRequest;
+use App\Http\Requests\{
+    StoreNewsRequest,
+    UpdateNewsRequest
+};
+use App\Http\Resources\NewsResource;
 use App\Models\News;
-
 class NewsController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        //
-    }
+    public function index(): JsonResponse {
+        $news = News::published()
+                    ->with(['author'])
+                    ->latest('published_at')
+                    ->paginate(10);
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return NewsResource::collection($news)->response();
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreNewsRequest $request)
-    {
-        //
+    public function store(StoreNewsRequest $request): JsonResponse {
+        $data = $request->validated();
+
+        $news = News::create($data);
+        $news->rubrics()->sync($data['rubric_ids']);
+
+        return (new NewsResource($news->load('author', 'rubrics')))
+               ->response()->setStatusCode(201);
     }
+
 
     /**
      * Display the specified resource.
      */
-    public function show(News $news)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(News $news)
-    {
-        //
+    public function show(News $news): JsonResponse {
+        $news->load(['author', 'rubrics']);
+        return (new NewsResource($news))->response();
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateNewsRequest $request, News $news)
-    {
-        //
+    public function update(UpdateNewsRequest $request, News $news): JsonResponse {
+        $data = $request->validated();
+
+        $news->update(collect($data)->except('rubric_ids')->all());
+
+        if (isset($data['rubric_ids'])) {
+            $news->rubrics()->sync($data['rubric_ids']);
+        }
+
+        return (new NewsResource($news->load('author', 'rubrics')))->response();
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(News $news)
+    public function destroy(News $news): JsonResponse
     {
-        //
+        $news->delete();
+        return response()->json(null, 204);
     }
 }

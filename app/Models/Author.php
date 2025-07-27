@@ -39,6 +39,11 @@ class Author extends Model
             ? asset('storage/' . $this->avatar_path)
             : asset('images/default_avatar.png');
     }
+
+    public function getEmailAttribute(): string {
+        return $this->user->email;
+    }
+
     protected $appends = ['avatar_url'];
 
 }
