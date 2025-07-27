@@ -3,33 +3,36 @@
 namespace App\Rules;
 
 use App\Models\Rubric;
-use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Contracts\Validation\ValidationRule;
+use Closure;
 
-class NotSelfOrDescendant implements Rule
+class NotSelfOrDescendant implements ValidationRule
 {
-    public function __construct(private Rubric $current) {}
+    public function __construct(private readonly Rubric $current) {}
 
-    public function passes($attribute, $value): bool
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        // parent_id пустой — всегда ок
-        if (!$value) return true;
+        // 1) parent_id не передан — пропускаем
+        if (!$value) {
+            return;
+        }
 
-        // Нельзя указать самого себя
-        if ($value == $this->current->id) return false;
+        // 2) Нельзя назначить родителем саму себя
+        if ($value == $this->current->id) {
+            $fail(__('validation.parent_must_not_be_descendant'));
+            return;
+        }
 
-        $parent = Rubric::query()
-            ->select('_lft', '_rgt')
-            ->find($value);
+        // 3) Проверяем, не является ли выбранный parent дочерним узлом
+        $parent = Rubric::query()->select('_lft', '_rgt')->find($value);
 
-        // Проверяем: newParent находится ВНУТРИ диапазона текущего узла?
-        return !(
+        if (
+            $parent &&
             $parent->_lft > $this->current->_lft &&
             $parent->_rgt < $this->current->_rgt
-        );
+        ) {
+            $fail(__('validation.parent_must_not_be_descendant'));
+        }
     }
 
-    public function message(): string
-    {
-        return __('validation.parent_must_not_be_descendant');
-    }
 }

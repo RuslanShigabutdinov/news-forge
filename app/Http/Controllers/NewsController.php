@@ -5,7 +5,8 @@ use Illuminate\Http\JsonResponse;
 
 use App\Http\Requests\{
     StoreNewsRequest,
-    UpdateNewsRequest
+    UpdateNewsRequest,
+    NewsSearchRequest
 };
 use App\Http\Resources\NewsResource;
 use App\Models\News;
@@ -67,5 +68,15 @@ class NewsController extends Controller
     {
         $news->delete();
         return response()->json(null, 204);
+    }
+
+    public function search(NewsSearchRequest $request) {
+        $news = News::query()
+            ->titleLike($request->validated('query'))
+            ->with(['author.user', 'rubrics'])
+            ->latest('published_at')
+            ->paginate(10);
+
+            return NewsResource::collection($news)->response();
     }
 }

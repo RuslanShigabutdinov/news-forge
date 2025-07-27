@@ -14,5 +14,9 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::apiResource('authors', AuthorController::class);
+
+Route::get('/news/search', [NewsController::class, 'search'])->name('news.search');
 Route::apiResource('news', NewsController::class);
+
 Route::apiResource('rubrics', RubricController::class);
+Route::get('/rubrics/{rubric}/news',  [RubricController::class, 'getNewsWithChildren'])->name('rubric.newsWithChildren');

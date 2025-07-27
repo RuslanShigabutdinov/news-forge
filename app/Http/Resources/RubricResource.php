@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\NewsResource;
 
 class RubricResource extends JsonResource
 {
@@ -18,6 +19,7 @@ class RubricResource extends JsonResource
             'id'       => $this->id,
             'name'     => $this->name,
             'children' => RubricResource::collection($this->whenLoaded('children')),
+            'news' => NewsResource::collection($this->whenLoaded('news')),
         ];
     }
     private function isDetail($request): bool {

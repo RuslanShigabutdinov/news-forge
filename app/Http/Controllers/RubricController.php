@@ -6,8 +6,14 @@ use App\Http\Requests\{
     StoreRubricRequest,
     UpdateRubricRequest
 };
-use App\Http\Resources\RubricResource;
-use App\Models\Rubric;
+use App\Http\Resources\{
+    RubricResource,
+    NewsResource
+};
+use App\Models\{
+    Rubric,
+    News
+};
 use Illuminate\Http\JsonResponse;
 
 class RubricController extends Controller
@@ -35,7 +41,7 @@ class RubricController extends Controller
      */
     public function show(Rubric $rubric): JsonResponse
     {
-        $rubric->load('parent', 'children');
+        $rubric->load('parent', 'children', 'news');
         return (new RubricResource($rubric))->response();
     }
 
@@ -55,5 +61,23 @@ class RubricController extends Controller
     {
         $rubric->delete();
         return response()->json(null, 204);
+    }
+
+    public function getNewsWithChildren(Rubric  $rubric): JsonResponse {
+        $news = News::query()
+        ->select(['news.*'])
+        ->distinct()
+        ->whereHas('rubrics', fn ($q) =>
+            $q->withinTree($rubric)
+        )
+        ->with([
+            'author.user',
+            'rubrics'
+        ])
+        ->latest('published_at')
+        ->paginate(10);
+
+        // 3. Отдаём JSON через ресурс‑обёртку
+        return response()->json(NewsResource::collection($news));
     }
 }

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\{
     BelongsTo,
     BelongsToMany,
@@ -30,9 +30,15 @@ class News extends Model
         return $this->belongsToMany(Rubric::class); 
     }
 
-    public function scopePublished($q) {
+    public function scopePublished(Builder $q) {
         return $q->whereNotNull('published_at')
                  ->where('published_at', '<=', now());
     }
+
+    public function scopeTitleLike(Builder $q, string $title): Builder
+    {
+        return $q->where('title', 'LIKE', "%{$title}%");
+    }
+
 
 }

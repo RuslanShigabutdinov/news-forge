@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Kalnoy\Nestedset\NodeTrait;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\{
     BelongsTo,
     BelongsToMany,
@@ -31,6 +32,11 @@ class Rubric extends Model
     public function childrenRecursive()
     {
         return $this->children()->with('childrenRecursive');
+    }
+
+    public function scopeWithinTree(Builder $query, Rubric $root): Builder {
+        return $query->where('_lft', '>=', $root->_lft)
+                     ->where('_rgt', '<=', $root->_rgt);
     }
 
 }
