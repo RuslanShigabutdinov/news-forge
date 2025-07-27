@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\News;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
+use App\Enums\Role;
 
 class NewsPolicy
 {
@@ -13,7 +14,7 @@ class NewsPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,7 +22,7 @@ class NewsPolicy
      */
     public function view(User $user, News $news): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -29,7 +30,7 @@ class NewsPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return in_array($user->role, [Role::AUTHOR, Role::ADMIN]);
     }
 
     /**
@@ -37,7 +38,7 @@ class NewsPolicy
      */
     public function update(User $user, News $news): bool
     {
-        return false;
+        return $user->role === Role::ADMIN || $user->id === $news->author->user_id;
     }
 
     /**
@@ -45,7 +46,7 @@ class NewsPolicy
      */
     public function delete(User $user, News $news): bool
     {
-        return false;
+        return $user->role === Role::ADMIN || $user->id === $news->author->user_id;
     }
 
     /**

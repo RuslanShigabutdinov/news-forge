@@ -12,9 +12,10 @@ use App\Http\Resources\NewsResource;
 use App\Models\News;
 class NewsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function __construct() {
+        $this->authorizeResource(News::class, 'news');
+    }
+
     public function index(): JsonResponse {
         $news = News::published()
                     ->with(['author'])

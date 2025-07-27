@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\Rubric;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
+use App\Enums\Role;
 
 class RubricPolicy
 {
@@ -13,7 +14,7 @@ class RubricPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,7 +22,7 @@ class RubricPolicy
      */
     public function view(User $user, Rubric $rubric): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -29,7 +30,7 @@ class RubricPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->role === Role::ADMIN;
     }
 
     /**
@@ -37,7 +38,7 @@ class RubricPolicy
      */
     public function update(User $user, Rubric $rubric): bool
     {
-        return false;
+        return $user->role === Role::ADMIN;
     }
 
     /**
@@ -45,7 +46,7 @@ class RubricPolicy
      */
     public function delete(User $user, Rubric $rubric): bool
     {
-        return false;
+        return $user->role === Role::ADMIN;
     }
 
     /**

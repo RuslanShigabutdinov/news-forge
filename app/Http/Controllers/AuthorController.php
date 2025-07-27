@@ -10,6 +10,11 @@ use Illuminate\Http\Response;
 
 class AuthorController extends Controller
 {
+
+    public function __construct() {
+        $this->authorizeResource(Author::class, 'author');
+    }
+
     public function index()
     {
         $authors = Author::withCount('news')->paginate(10);
