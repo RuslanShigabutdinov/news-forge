@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\News;
 use App\Jobs\SendNewsPublishedNotification;
+use Illuminate\Support\Facades\Log;
 
 class NewsObserver
 {
@@ -22,6 +23,14 @@ class NewsObserver
             $news->published_at->copy()
         )
         ->delay($delay)
-        ->afterCommit();                   // безопасно при транзакциях
+        ->afterCommit();
+
+        Log::channel('mail')->info('Mail queued', [
+            'news_id'     => $news->id,
+            'author_id'   => $news->author_id,
+            'email'       => $news->author->user->email ?? null,
+            'run_at'      => $delay->toDateTimeString(),
+        ]);
+
     }
 }
