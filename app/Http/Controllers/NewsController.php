@@ -10,6 +10,12 @@ use App\Http\Requests\{
 };
 use App\Http\Resources\NewsResource;
 use App\Models\News;
+
+/**
+ * @group Authenticated requests
+ *
+ * @authenticated
+ */
 class NewsController extends Controller
 {
     public function __construct() {

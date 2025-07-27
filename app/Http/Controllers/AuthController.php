@@ -9,12 +9,16 @@ use App\Http\Requests\{
     RegisterRequest   
 };
 use Illuminate\Support\Facades\Hash;
+use Dedoc\Scramble\Attributes\BodyParameter;
 
 use App\Models\User;
 use App\Enums\Role;
 
 class AuthController extends Controller
 {
+    /**
+    * @unauthenticated
+    */
     public function register(RegisterRequest $request): JsonResponse
     {
         $user = User::create([
@@ -27,7 +31,11 @@ class AuthController extends Controller
         return response()->json(['token'=>$token], 201);
     }
 
-
+    /**
+    * @unauthenticated
+    */
+    #[BodyParameter('email', type: 'string', example: 'admin@admin.com')]
+    #[BodyParameter('password', type: 'string', example: 'root')]
     public function login(LoginRequest $request) {
         $credentials = $request->validated();
 

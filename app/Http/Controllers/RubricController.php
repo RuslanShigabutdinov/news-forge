@@ -16,6 +16,11 @@ use App\Models\{
 };
 use Illuminate\Http\JsonResponse;
 
+/**
+ * @group Authenticated requests
+ *
+ * @authenticated
+ */
 class RubricController extends Controller
 {
     public function __construct() {

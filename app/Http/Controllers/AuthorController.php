@@ -7,7 +7,11 @@ use App\Http\Requests\UpdateAuthorRequest;
 use App\Models\Author;
 use App\Http\Resources\AuthorResource;
 use Illuminate\Http\Response;
-
+/**
+ * @group Authenticated requests
+ *
+ * @authenticated
+ */
 class AuthorController extends Controller
 {
 
