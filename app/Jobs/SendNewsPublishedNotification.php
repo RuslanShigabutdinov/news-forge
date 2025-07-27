@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Mail\NewsPublishedMail;
 use App\Models\News;
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\{
     ShouldQueue
