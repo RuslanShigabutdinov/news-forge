@@ -1,0 +1,74 @@
+services:
+  # PHP Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9000 || exit 1"]
+      interval: 5s
+      timeout: 2s
+      retries: 20
+
+    volumes:
+      - ./:/var/www/html
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - dockerized-laravel-network
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+
+  # Nginx Web Server
+  webserver:
+    image: nginx:alpine
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - dockerized-laravel-network
+
+  # PostgreSQL Database
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${DB_DATABASE}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - dockerized-laravel-data:/var/lib/postgresql/data
+    networks:
+      - dockerized-laravel-network
+    ports:
+      - "5432:5432"
+
+  # Redis for Cache and Queue
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+    networks:
+      - dockerized-laravel-network
+    ports:
+      - "6379:6379"
+
+# Networks
+networks:
+  dockerized-laravel-network:
+    driver: bridge
+
+# Volumes
+volumes:
+  dockerized-laravel-data:
+    driver: local
