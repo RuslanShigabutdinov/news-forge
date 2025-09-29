@@ -107,5 +107,17 @@ return [
         RestrictedDocsAccess::class,
     ],
 
-    'extensions' => [],
+    'extensions' => [
+        'components' => [
+            'securitySchemes' => [
+                'BearerAuth' => [
+                    'type' => 'http',
+                    'scheme' => 'bearer',
+                ],
+            ],
+        ],
+        'security' => [
+            ['BearerAuth' => []],
+        ],
+    ],
 ];

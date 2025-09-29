@@ -42,7 +42,7 @@ return [
         ],
         'sanctum' => [
             'driver'   => 'sanctum',
-            'provider' => 'users',          // или authors
+            'provider' => 'users',
         ],
     ],
 

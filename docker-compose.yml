@@ -5,12 +5,6 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "nc -z localhost 9000 || exit 1"]
-      interval: 5s
-      timeout: 2s
-      retries: 20
-
     volumes:
       - ./:/var/www/html
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
@@ -28,9 +22,6 @@ services:
   webserver:
     image: nginx:alpine
     restart: unless-stopped
-    depends_on:
-      app:
-        condition: service_healthy
     ports:
       - "8080:8080"
     volumes:
@@ -52,7 +43,15 @@ services:
     networks:
       - dockerized-laravel-network
     ports:
-      - "5432:5432"
+      - "5433:5433"
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8081:8080"
+    networks:
+      - dockerized-laravel-network
 
   # Redis for Cache and Queue
   redis:

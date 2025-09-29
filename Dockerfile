@@ -30,7 +30,6 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 COPY . /var/www/html
 
 # Install dependencies and build assets
-RUN composer install --no-interaction --no-plugins --no-scripts
 RUN npm install && npm run build
 
 EXPOSE 9000
