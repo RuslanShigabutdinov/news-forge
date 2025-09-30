@@ -79,7 +79,7 @@ class NewsController extends Controller
 
     public function search(NewsSearchRequest $request) {
         $news = News::query()
-            ->titleLike($request->validated('query'))
+            ->search($request->validated('query'))
             ->with(['author.user', 'rubrics'])
             ->latest('published_at')
             ->paginate(10);

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\{
     BelongsTo,
     BelongsToMany,
 };
+use Illuminate\Support\Facades\DB;
 
 
 class News extends Model
@@ -35,9 +36,22 @@ class News extends Model
                  ->where('published_at', '<=', now());
     }
 
-    public function scopeTitleLike(Builder $q, string $title): Builder
-    {
-        return $q->where('title', 'LIKE', "%{$title}%");
+    public function scopeSearch(Builder $query, string $term): Builder {
+        $pdo = DB::getPdo();
+        $quoted = $pdo->quote($term);
+
+        return $query->select('*')
+            ->addSelect(DB::raw("
+                ts_rank(
+                    to_tsvector('english', coalesce(title,'') || ' ' || coalesce(body,'')),
+                    plainto_tsquery('english', {$quoted})
+                ) as rank
+            "))
+            ->whereRaw(
+                "to_tsvector('english', coalesce(title,'') || ' ' || coalesce(body,'')) @@ plainto_tsquery('english', ?)",
+                [$term]
+            )
+            ->orderByDesc('rank');
     }
 
 
