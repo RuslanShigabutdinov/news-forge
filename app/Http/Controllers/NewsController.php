@@ -11,6 +11,8 @@ use App\Http\Requests\{
 use App\Http\Resources\NewsResource;
 use App\Models\News;
 
+use Illuminate\Support\Facades\Cache;
+
 /**
  * @group Authenticated requests
  *
@@ -23,10 +25,16 @@ class NewsController extends Controller
     }
 
     public function index(): JsonResponse {
-        $news = News::published()
-                    ->with(['author'])
-                    ->latest('published_at')
-                    ->paginate(10);
+        $page = request('page', 1);
+        $cacheKey = "news_page_{$page}";
+
+        $news = Cache::remember($cacheKey, now()->addMinutes(10), function () {
+            return News::published()
+                ->with(['author'])
+                ->latest('published_at')
+                ->paginate(10);
+        });
+
 
         return NewsResource::collection($news)->response();
     }
